@@ -91,18 +91,26 @@ RUN if [ ! -f /tmp/resources/geoserver.zip ]; then \
       -O /tmp/resources/geoserver.zip; \
     fi; \
     unzip /tmp/resources/geoserver.zip -d /tmp/geoserver \
-    && unzip /tmp/geoserver/geoserver.war -d $CATALINA_HOME/webapps/geoserver \
-    && rm -rf $CATALINA_HOME/webapps/geoserver/data \
+    && mkdir -p /opt/webapp/geoserver \
+    && unzip /tmp/geoserver/geoserver.war -d /opt/webapp/geoserver \
+    && rm -rf /opt/webapps/geoserver/data \
     && rm -rf /tmp/geoserver
 
 # Install any plugin zip files in resources/plugins
 RUN if ls /tmp/resources/plugins/*.zip > /dev/null 2>&1; then \
       for p in /tmp/resources/plugins/*.zip; do \
         unzip $p -d /tmp/gs_plugin \
-        && mv /tmp/gs_plugin/*.jar $CATALINA_HOME/webapps/geoserver/WEB-INF/lib/ \
+        && mv /tmp/gs_plugin/*.jar /opt/webapps/geoserver/WEB-INF/lib/ \
         && rm -rf /tmp/gs_plugin; \
       done; \
     fi
+
+#override the default settings for the root context of the tomcat installation and set geoserver as default app
+#RUN mv /tmp/resources/ROOT/ROOT.xml $CATALINA_HOME/conf/Catalina/localhost/
+RUN if [ ! -f $CATALINA_HOME/conf/Catalina/localhost ]; then \
+    mkdir -p $CATALINA_HOME/conf/Catalina/localhost; \
+    fi; \
+    mv /tmp/resources/ROOT/ROOT.xml $CATALINA_HOME/conf/Catalina/localhost/
 
 # Overlay files and directories in resources/overlays if they exist
 RUN rm -f /tmp/resources/overlays/README.txt && \
@@ -119,6 +127,7 @@ RUN if [ "$TOMCAT_EXTRAS" = false ]; then \
     rm -rf $CATALINA_HOME/webapps/host-manager && \
     rm -rf $CATALINA_HOME/webapps/manager; \
   fi;
+
 
 # Delete resources after installation
 RUN rm -rf /tmp/resources
