@@ -1,0 +1,5 @@
+<Context 
+  docBase="/opt/webapp/geoserver" 
+  path="" 
+  reloadable="true" 
+/>
