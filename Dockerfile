@@ -16,7 +16,7 @@ RUN apt-get -y update
 
 #-------------Application Specific Stuff ----------------------------------------------------
 
-ENV GS_VERSION 2.9.1
+ENV GS_VERSION 2.11.1
 ENV GEOSERVER_DATA_DIR /opt/geoserver/data_dir
 
 RUN mkdir -p $GEOSERVER_DATA_DIR
@@ -100,7 +100,7 @@ RUN if [ ! -f /tmp/resources/geoserver.zip ]; then \
 RUN if ls /tmp/resources/plugins/*.zip > /dev/null 2>&1; then \
       for p in /tmp/resources/plugins/*.zip; do \
         unzip $p -d /tmp/gs_plugin \
-        && mv /tmp/gs_plugin/*.jar /opt/webapps/geoserver/WEB-INF/lib/ \
+        && mv /tmp/gs_plugin/*.jar /opt/webapp/geoserver/WEB-INF/lib/ \
         && rm -rf /tmp/gs_plugin; \
       done; \
     fi
